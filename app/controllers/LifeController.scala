@@ -7,8 +7,6 @@ import models.com.bulba.{RandomCanvas, GameState}
 
 object LifeController extends Controller {
 
-  implicit val fooWrites = Json.writes[Message]
-
   var state = new GameState(RandomCanvas(300,50))
 
   def getState = Action {

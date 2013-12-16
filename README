@@ -1,13 +1,15 @@
 Game of Life in Scala
 
-early alpha - prepare a canvas of alive and dead cells in a form of a newline separated string of 1's and 0's and use with the GameOfLife app.
+alpha - prepare a canvas of alive and dead cells in a form of a newline separated string of 1's and 0's and use with the GameOfLife app.
 Game is displayed in a console, use any key to advance a stage.
+Simple visualisation added in a work-in-progress web page: use ./activator run and http://localhost:9000
 
 future plans:
-	web presentation layer using javascript canvas/Play
-	spike several javascript visualisation libraries
-	presentation to show a shadow of a previous state (smooth transitions)
+	web presentation layer using javascript canvas/Play - cleanup
+	proper state handling
+	canvas/javascript presentation to show a shadow of a previous state (smooth transitions)
 	improved algorithms to calculate large/semi-infinite game canvases
+	3d life (life sphere)
 
 Other implementations:
 http://rosettacode.org/wiki/Conway's_Game_of_Life/Scala
