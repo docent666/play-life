@@ -10,7 +10,7 @@ trait Canvas[T <: Cell] {
 
   def stage() : Canvas[Cell]
 
-  def toNumericSequence() : Seq[Long]
+  def toNumericSequence() : Seq[Seq[Long]]
 
 }
 
@@ -37,10 +37,16 @@ trait FiniteCanvas extends Canvas[Cell] {
     (for (row <- canvas ) yield row.mkString(" ") ).mkString("\n")
   }
 
-  def toNumericSequence() :Seq[Long] = {
+  def toNumericSequence() :Seq[Seq[Long]] = {
 
-    for (row <- canvas ) yield {
-      java.lang.Long.parseLong(row.mkString,2)
+    def rowToSeqLong(row : Seq[Cell]) : List[Long] = {
+      if (row.length>53) {
+        val rows = row.splitAt(53)
+        List(java.lang.Long.parseLong(rows._1.mkString,2)) ::: rowToSeqLong(rows._2)
+      } else List(java.lang.Long.parseLong(row.mkString,2))
+    }
+    for (row<-canvas) yield {
+      rowToSeqLong(row)
     }
   }
 

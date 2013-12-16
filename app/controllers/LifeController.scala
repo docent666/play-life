@@ -7,7 +7,7 @@ import models.com.bulba.{RandomCanvas, GameState}
 
 object LifeController extends Controller {
 
-  var state = new GameState(RandomCanvas(300,50))
+  var state = new GameState(RandomCanvas(300,424))
 
   def getState = Action {
     state=state.advance()

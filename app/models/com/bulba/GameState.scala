@@ -8,7 +8,7 @@ class GameState(val canvas: Canvas[Cell]) {
     canvas.toString
   }
 
-  def toNumericSequence() : Seq[Long] = {
+  def toNumericSequence() : Seq[Seq[Long]] = {
     canvas.toNumericSequence
   }
 
