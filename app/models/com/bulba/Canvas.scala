@@ -71,11 +71,11 @@ case class StringCanvas(override val canvas: Seq[Seq[Cell]]) extends FiniteCanva
 object StringCanvas {
   def apply(stringCanvas: String) = {
     val parsedRows = stringCanvas.filter(x => x.equals('\n') || x.isDigit).split('\n').filterNot(_.isEmpty)
-    val arrays = for (row <- parsedRows) yield row.map {
+    val arrays = parsedRows.map(_.map {
       case '0' => DeadCell
       case '1' => LiveCell
       case _ => throw new IllegalArgumentException
-    }.toSeq
+    })
     new StringCanvas(arrays)
   }
 }
