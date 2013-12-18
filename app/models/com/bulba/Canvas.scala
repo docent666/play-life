@@ -25,16 +25,16 @@ trait FiniteCanvas extends Canvas[Cell] {
     case (_, _) => canvas(x)(y)
   }
 
-  def getNeighbors(x: Int, y: Int): Seq[Cell] = for (i1 <- x - 1 to x + 1;
+  def getNeighbors(x: Int, y: Int): Seq[Cell] = for {i1 <- x - 1 to x + 1
                                                      y1 <- y - 1 to y + 1
-                                                     if !(i1 == x && y1 == y))
-  yield getCell(i1, y1)
+                                                     if !(i1 == x && y1 == y)}
+                                                           yield getCell(i1, y1)
 
 
   def stage() : Canvas[Cell]
 
   override def toString : String = {
-    canvas  map(_.mkString("")) mkString "\n"
+    canvas map(_.mkString("")) mkString "\n"
   }
 
   def toNumericSequence() :Seq[Seq[Long]] = {
@@ -52,10 +52,7 @@ trait FiniteCanvas extends Canvas[Cell] {
 
 case class RandomCanvas(width: Int, height :Int) extends FiniteCanvas {
   def stage(): StringCanvas = {
-    val allStagedCells = for (i <- 0 until canvas.length)
-      yield (for (y <- 0 until canvas(i).length)
-        yield getCell(i, y).stage(getNeighbors(i, y))).toSeq
-    new StringCanvas(allStagedCells.toSeq)
+    new StringCanvas(canvas)
   }
 
   val canvas: Seq[Seq[Cell]] = for (i <- 0 until width) yield
