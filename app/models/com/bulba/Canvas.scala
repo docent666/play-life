@@ -34,36 +34,39 @@ trait FiniteCanvas extends Canvas[Cell] {
   def stage() : Canvas[Cell]
 
   override def toString : String = {
-    (for (row <- canvas ) yield row.mkString(" ") ).mkString("\n")
+    canvas  map(_.mkString("")) mkString "\n"
   }
 
   def toNumericSequence() :Seq[Seq[Long]] = {
 
-    def rowToSeqLong(row : Seq[Cell]) : List[Long] = {
+    def rowToSeqLong(row : Seq[Cell]) : Seq[Long] = {
       if (row.length>53) {
         val rows = row.splitAt(53)
-        List(java.lang.Long.parseLong(rows._1.mkString,2)) ::: rowToSeqLong(rows._2)
-      } else List(java.lang.Long.parseLong(row.mkString,2))
+        Seq(java.lang.Long.parseLong(rows._1.mkString,2)).++(rowToSeqLong(rows._2))
+      } else Seq(java.lang.Long.parseLong(row.mkString,2))
     }
-    for (row<-canvas) yield {
-      rowToSeqLong(row)
-    }
+    canvas map rowToSeqLong
   }
 
 }
 
 case class RandomCanvas(width: Int, height :Int) extends FiniteCanvas {
   def stage(): StringCanvas = {
-    val allStagedCells = for (i <- 0 until canvas.length) yield (for (y <- 0 until canvas(i).length) yield getCell(i, y).stage(getNeighbors(i, y))).toSeq
+    val allStagedCells = for (i <- 0 until canvas.length)
+      yield (for (y <- 0 until canvas(i).length)
+        yield getCell(i, y).stage(getNeighbors(i, y))).toSeq
     new StringCanvas(allStagedCells.toSeq)
   }
 
-  val canvas: Seq[Seq[Cell]] = for (i <- 0 until width) yield  for (y <-0 until height) yield if (Random.nextBoolean()) LiveCell else DeadCell
+  val canvas: Seq[Seq[Cell]] = for (i <- 0 until width) yield
+    for (y <-0 until height) yield
+      if (Random.nextInt(10)>8) LiveCell else DeadCell
 }
 
 case class StringCanvas(override val canvas: Seq[Seq[Cell]]) extends FiniteCanvas {
   def stage(): StringCanvas = {
-    val allStagedCells = for (i <- 0 until canvas.length) yield (for (y <- 0 until canvas(i).length) yield getCell(i, y).stage(getNeighbors(i, y))).toSeq
+    val allStagedCells = for (i <- 0 until canvas.length)
+      yield (for (y <- 0 until canvas(i).length) yield getCell(i, y).stage(getNeighbors(i, y))).toSeq
     new StringCanvas(allStagedCells.toSeq)
   }
 }
