@@ -32,18 +32,18 @@ class GameStateSpec extends FlatSpec with ShouldMatchers {
                      """.stripMargin
 
   "GameState with String Canvas"  should "use the cell rules to advance a canvas (generally)" in {
-    val canvas: Canvas[Cell] = new GameState(StringCanvas(entry1Canvas)).advance().canvas
+    val canvas = new GameState(StringCanvas(entry1Canvas)).advance().canvas
     canvas should not be StringCanvas(entry1Canvas)
   }
 
   "GameState with String Canvas"  should "use the cell rules to advance a canvas (make cell alive)" in {
-    val canvas: Canvas[Cell] = new GameState(StringCanvas(entry1Canvas)).advance().canvas
+    val canvas = new GameState(StringCanvas(entry1Canvas)).advance().canvas
     val resultCanvas = StringCanvas(result1Canvas)
     canvas should be (resultCanvas)
   }
 
   "GameState with String Canvas"  should "use the cell rules to advance a canvas (kill starved cells)" in {
-    val canvas: Canvas[Cell] = new GameState(StringCanvas(entry2Canvas)).advance().canvas
+    val canvas = new GameState(StringCanvas(entry2Canvas)).advance().canvas
     val resultCanvas = StringCanvas(result2Canvas)
     canvas should be (resultCanvas)
     canvas should not be StringCanvas(entry2Canvas)

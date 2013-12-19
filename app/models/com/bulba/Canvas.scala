@@ -2,21 +2,21 @@ package models.com.bulba
 
 import scala.util.Random
 
-trait Canvas[T <: Cell] {
+trait Canvas[+S <: Seq[Cell], +T <:Seq[S]] {
 
   def getCell(x: Int, y: Int): Cell
 
-  def getNeighbors(x: Int, y: Int): Seq[T]
+  def getNeighbors(x: Int, y: Int): S
 
-  def stage() : Canvas[Cell]
+  def stage() : Canvas[S, T]
 
   def toNumericSequence() : Seq[Seq[Long]]
 
 }
 
-trait FiniteCanvas extends Canvas[Cell] {
+trait FiniteCanvas[+S <: Seq[Cell], +T <: Seq[S]]  extends Canvas[S, T] {
 
-  val canvas: Seq[Seq[Cell]]
+  val canvas: T
 
   def getCell(x: Int, y: Int): Cell = (x, y) match {
     case (a, _) if a < 0 => DeadCell
@@ -25,13 +25,13 @@ trait FiniteCanvas extends Canvas[Cell] {
     case (_, _) => canvas(x)(y)
   }
 
-  def getNeighbors(x: Int, y: Int): Seq[Cell] = for {i1 <- x - 1 to x + 1
+  def getNeighbors(x: Int, y: Int): S =   (for {i1 <- x - 1 to x + 1
                                                      y1 <- y - 1 to y + 1
                                                      if !(i1 == x && y1 == y)}
-                                                           yield getCell(i1, y1)
+                                                           yield getCell(i1, y1)).asInstanceOf[S]
 
 
-  def stage() : Canvas[Cell]
+  def stage() : Canvas[S, T]
 
   override def toString : String = {
     canvas map(_.mkString("")) mkString "\n"
@@ -42,25 +42,40 @@ trait FiniteCanvas extends Canvas[Cell] {
     def rowToSeqLong(row : Seq[Cell]) : Seq[Long] = {
       if (row.length>53) {
         val rows = row.splitAt(53)
-        Seq(java.lang.Long.parseLong(rows._1.mkString,2)).++(rowToSeqLong(rows._2))
+        Seq(java.lang.Long.parseLong(rows._1.mkString,2)) ++ rowToSeqLong(rows._2)
       } else Seq(java.lang.Long.parseLong(row.mkString,2))
     }
-    canvas map rowToSeqLong
+    canvas.map(rowToSeqLong(_))
   }
 
 }
 
-case class RandomCanvas(width: Int, height :Int) extends FiniteCanvas {
-  def stage(): StringCanvas = {
-    new StringCanvas(canvas)
+case class RandomCanvas [+S <: Seq[Cell], +T <: Seq[S]] (width: Int, height :Int) extends FiniteCanvas[S, T] {
+  def stage(): Canvas[S, T] = {
+    new ArrayCanvas[S, T](canvas.asInstanceOf[T])
   }
 
-  val canvas: Seq[Seq[Cell]] = for (i <- 0 until width) yield
+  val canvas  = (for (i <- 0 until width) yield
     for (y <-0 until height) yield
-      if (Random.nextInt(10)>8) LiveCell else DeadCell
+      if (Random.nextInt(10)>8) LiveCell else DeadCell).asInstanceOf[T]
 }
 
-case class StringCanvas(override val canvas: Seq[Seq[Cell]]) extends FiniteCanvas {
+case class ArrayCanvas [+S <: Seq[Cell], +T <: Seq[S]] (override val canvas : T) extends FiniteCanvas[S, T] {
+  def stage(): ArrayCanvas[S, T]= {
+    val allStagedCells = {
+      val newCanvas = Array.ofDim[Cell](canvas.length, canvas(0).length)
+      for(i <-0 until canvas.length){
+        for (j <- 0 until canvas(i).length) {
+          newCanvas(i)(j)= getCell(i, j).stage(getNeighbors(i, j))
+        }
+      }
+      newCanvas
+    }
+    new ArrayCanvas[S, T](allStagedCells.map(_.toSeq).toSeq.asInstanceOf[T])
+  }
+}
+
+case class StringCanvas (override val canvas: Seq[Seq[Cell]]) extends FiniteCanvas[Seq[Cell], Seq[Seq[Cell]]] {
   def stage(): StringCanvas = {
     val allStagedCells = for (i <- 0 until canvas.length)
       yield (for (y <- 0 until canvas(i).length) yield getCell(i, y).stage(getNeighbors(i, y))).toSeq

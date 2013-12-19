@@ -1,6 +1,8 @@
 package models.com.bulba
 
-class GameState(val canvas: Canvas[Cell]) {
+import scala.collection.parallel.ParSeq
+
+class GameState(val canvas: Canvas[Seq[Cell], Seq[Seq[Cell]]]) {
 
   def advance() : GameState = new GameState(canvas.stage())
 
