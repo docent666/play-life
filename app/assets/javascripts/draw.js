@@ -1,17 +1,22 @@
 function padString(binString, targetWidth) {
-    var padding = targetWidth-binString.length;
-    var pad = "";
-    for (var i=0; i<padding; i++) {
-        pad+="0";
-    }
-    return pad+binString;
+    var len = targetWidth-binString.length;
+    if (len>0)
+        return Array(targetWidth-binString.length+1).join("0")+binString;
+    return binString;
 }
 
 function putPixel(data, coord, value){
-    data[coord] =     0x77*value;
-    data[coord + 1] = 0xCA*value;
-    data[coord + 2] = 0xE6*value;
+if (value == 0) {
+    data[coord] =     0x77;
+    data[coord + 1] = 0xCA;
+    data[coord + 2] = 0xE6;
     data[coord + 3] = 255;
+ } else {
+    data[coord] =     0;
+    data[coord + 1] = 0;
+    data[coord + 2] = 0;
+    data[coord + 3] = 255;
+ }
 }
 
 function draw(arrHex) {
