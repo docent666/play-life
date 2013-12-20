@@ -48,7 +48,7 @@ trait FiniteCanvas[+S <: Seq[Cell], +T <: Seq[S]]  extends Canvas[S, T] {
         Seq(java.lang.Long.parseLong(rows._1.mkString,2)) ++ rowToSeqLong(rows._2)
       } else Seq(java.lang.Long.parseLong(row.mkString,2))
     }
-    canvas.map(rowToSeqLong(_))
+    canvas.par.map(rowToSeqLong(_)).seq
   }
 
 }
