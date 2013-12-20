@@ -1,6 +1,9 @@
 package models.com.bulba
 
 import scala.util.Random
+import scala.concurrent.{ExecutionContext, Await, Future}
+import scala.concurrent.duration._
+import ExecutionContext.Implicits.global
 
 trait Canvas[+S <: Seq[Cell], +T <:Seq[S]] {
 
@@ -50,7 +53,7 @@ trait FiniteCanvas[+S <: Seq[Cell], +T <: Seq[S]]  extends Canvas[S, T] {
 
 }
 
-case class RandomCanvas [+S <: Seq[Cell], +T <: Seq[S]] (width: Int, height :Int) extends FiniteCanvas[S, T] {
+case class RandomCanvas [S <: Seq[Cell], T <: Seq[S]] (width: Int, height :Int) extends FiniteCanvas[S, T] {
   def stage(): Canvas[S, T] = {
     new ArrayCanvas[S, T](canvas.asInstanceOf[T])
   }
@@ -60,15 +63,21 @@ case class RandomCanvas [+S <: Seq[Cell], +T <: Seq[S]] (width: Int, height :Int
       if (Random.nextInt(10)>8) LiveCell else DeadCell).asInstanceOf[T]
 }
 
-case class ArrayCanvas [+S <: Seq[Cell], +T <: Seq[S]] (override val canvas : T) extends FiniteCanvas[S, T] {
+case class ArrayCanvas [S <: Seq[Cell], T <: Seq[S]] (override val canvas : T) extends FiniteCanvas[S, T] {
   def stage(): ArrayCanvas[S, T]= {
     val allStagedCells = {
       val newCanvas = Array.ofDim[Cell](canvas.length, canvas(0).length)
-      for(i <-0 until canvas.length){
-        for (j <- 0 until canvas(i).length) {
-          newCanvas(i)(j)= getCell(i, j).stage(getNeighbors(i, j))
+      var i = 0
+      val listOfFutures = canvas.map(row => {
+        val localI = i
+        val future = Future {
+          for (j <- 0 until row.length)
+            newCanvas(localI)(j)= getCell(localI, j).stage(getNeighbors(localI, j))
         }
-      }
+        i+=1
+        future
+      })
+      Await.result(Future.sequence(listOfFutures), Duration(10, SECONDS))
       newCanvas
     }
     new ArrayCanvas[S, T](allStagedCells.map(_.toSeq).toSeq.asInstanceOf[T])
