@@ -47,7 +47,6 @@ function draw(arrHex) {
                 }
             }
       }
-
       ctx.putImageData(imgData, 0, 0);
   }
 }
