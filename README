@@ -1,15 +1,13 @@
-Game of Life in Scala
+Game of Life in Scala - alpha version
 
-alpha - prepare a canvas of alive and dead cells in a form of a newline separated string of 1's and 0's and use with the GameOfLife app.
-Game is displayed in a console, use any key to advance a stage.
-Simple visualisation added in a work-in-progress web page: use ./activator run and http://localhost:9000
+Implementation of Game of Life http://en.wikipedia.org/wiki/Conway's_Game_of_Life using Scala, Play, simple Javascript and HTML5 Canvas.
+Web visualisation using Play/Activator: use ./activator run and http://localhost:9000
+Game of Life in a console: use GameOfLife app and press any key to advance a stage.
 
 future plans:
-	web presentation layer using javascript canvas/Play - cleanup
-	proper state handling
-	canvas/javascript presentation to show a shadow of a previous state (smooth transitions)
+	web presentation layer - control buttons, scaled up 2d canvas
 	improved algorithms to calculate large/semi-infinite game canvases
-	3d life (life sphere)
+	3d Life - GoL presented in a sphere or cube, using 3D canvas
 
 Other implementations:
 http://rosettacode.org/wiki/Conway's_Game_of_Life/Scala
@@ -19,4 +17,4 @@ Environment:
 SBT 0.13
 gen-idea 1.5.1
 Intellij 12 with scala plugin
-This file was modified by IntelliJ IDEA 12.1.6 for binding GitHub repository
+Typesafe Activator
