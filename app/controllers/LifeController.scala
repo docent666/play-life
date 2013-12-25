@@ -15,7 +15,9 @@ object LifeController extends Controller {
         session.get("state") match {
 
           case Some(sessionState) =>
-            val state = states(sessionState.asInstanceOf[String])
+            val state = states.getOrElse(sessionState.asInstanceOf[String], new GameState(RandomCanvas(300, 424)))
+            if (!states.contains(sessionState.asInstanceOf[String]))
+              states += (sessionState -> state)
             state.advance()
             Ok(Json.toJson(state.toNumericSequence()))
               .withSession("state" -> sessionState)
