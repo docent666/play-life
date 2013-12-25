@@ -1,10 +1,16 @@
 $(function() {
     $("#getStateButton").click(function(event) {
-        jsRoutes.controllers.LifeController.getState().ajax({
-            success: function(data) {
-              //  console.log(data)
-                draw(data)
-            }
-        })
+        startRefresh();
     })
 })
+
+
+function startRefresh() {
+    setTimeout(startRefresh,50);
+    jsRoutes.controllers.LifeController.getState().ajax({
+               success: function(data) {
+                 //  console.log(data)
+                   draw(data)
+               }
+    })
+}

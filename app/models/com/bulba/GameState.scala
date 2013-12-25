@@ -1,10 +1,11 @@
 package models.com.bulba
 
-import scala.collection.parallel.ParSeq
 
-class GameState(val canvas: Canvas[Seq[Cell], Seq[Seq[Cell]]]) {
+class GameState(var canvas: Canvas[Seq[Cell], Seq[Seq[Cell]]]) {
 
-  def advance() : GameState = new GameState(canvas.stage())
+  def advance() = {
+    canvas = canvas.stage()
+  }
 
   override def toString() : String = {
     canvas.toString

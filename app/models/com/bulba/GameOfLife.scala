@@ -12,10 +12,10 @@ object GameOfLife extends App {
     """.stripMargin)
   val con = new tools.jline.console.ConsoleReader()
   //var state = new GameState(StringCanvas(demoCanvas))
-  var state = new GameState(RandomCanvas(1000,1000))
+  val state = new GameState(RandomCanvas(1000,1000))
   while (true) {
     con.readVirtualKey()
     println(state)
-    state = state.advance()
+    state.advance()
   }
 }

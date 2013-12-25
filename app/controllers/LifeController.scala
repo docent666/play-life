@@ -7,16 +7,32 @@ import models.com.bulba.{RandomCanvas, GameState}
 
 object LifeController extends Controller {
 
-  var state = new GameState(RandomCanvas(300,424))
+  var states = Map[String, GameState]()
 
-  def getState = Action {
-    state=state.advance()
-    Ok(Json.toJson(state.toNumericSequence()))
+  def getState = {
+    Action {
+      implicit request =>
+        session.get("state") match {
+
+          case Some(sessionState) =>
+            val state = states(sessionState.asInstanceOf[String])
+            state.advance()
+            Ok(Json.toJson(state.toNumericSequence()))
+              .withSession("state" -> sessionState)
+
+          case None =>
+            val state = new GameState(RandomCanvas(300, 424))
+            states += (state.hashCode().toString -> state)
+            Ok(Json.toJson(state.toNumericSequence()))
+              .withSession("state" -> state.hashCode().toString)
+        }
+    }
 
   }
 
-  def javascriptRoutes = Action { implicit request =>
-    Ok(Routes.javascriptRouter("jsRoutes")(routes.javascript.LifeController.getState)).as(JAVASCRIPT)
+  def javascriptRoutes = Action {
+    implicit request =>
+      Ok(Routes.javascriptRouter("jsRoutes")(routes.javascript.LifeController.getState)).as(JAVASCRIPT)
   }
 
 }
