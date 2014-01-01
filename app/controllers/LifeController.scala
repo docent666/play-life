@@ -32,9 +32,31 @@ object LifeController extends Controller {
 
   }
 
+  def reset = {
+    Action {
+      implicit request =>
+        session.get("state") match {
+
+          case Some(sessionState) =>
+            states += (sessionState -> new GameState(RandomCanvas(300, 424)))
+            Ok(Json.toJson(states(sessionState).toNumericSequence()))
+              .withSession("state" -> sessionState)
+
+          case None =>
+            val state = new GameState(RandomCanvas(300, 424))
+            states += (state.hashCode().toString -> state)
+            Ok(Json.toJson(state.toNumericSequence()))
+              .withSession("state" -> state.hashCode().toString)
+        }
+    }
+
+  }
+
   def javascriptRoutes = Action {
     implicit request =>
-      Ok(Routes.javascriptRouter("jsRoutes")(routes.javascript.LifeController.getState)).as(JAVASCRIPT)
+      Ok(Routes.javascriptRouter("jsRoutes")
+        (routes.javascript.LifeController.getState,
+        routes.javascript.LifeController.reset)).as(JAVASCRIPT)
   }
 
 }
