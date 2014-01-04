@@ -4,10 +4,19 @@ import play.api.mvc.{Action, Controller}
 import play.api.libs.json.Json
 import play.api.Routes
 import models.com.bulba.{RandomCanvas, GameState}
+import collection.JavaConverters._
+import com.google.common.cache.CacheBuilder
+import java.util.concurrent.TimeUnit
 
 object LifeController extends Controller {
 
-  var states = Map[String, GameState]()
+  var states = CacheBuilder.
+    newBuilder().
+    expireAfterAccess(1, TimeUnit.HOURS).
+    build[String,GameState]().
+    asMap().
+    asScala
+
 
   def getState = {
     Action {
