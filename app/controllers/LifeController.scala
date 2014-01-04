@@ -12,7 +12,7 @@ object LifeController extends Controller {
 
   val states = CacheBuilder.
     newBuilder().
-    expireAfterAccess(1, TimeUnit.SECONDS).
+    expireAfterAccess(1, TimeUnit.HOURS).
     build[String,GameState]().
     asMap().
     asScala
