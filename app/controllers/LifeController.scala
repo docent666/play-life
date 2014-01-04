@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit
 
 object LifeController extends Controller {
 
-  var states = CacheBuilder.
+  val states = CacheBuilder.
     newBuilder().
-    expireAfterAccess(1, TimeUnit.HOURS).
+    expireAfterAccess(1, TimeUnit.SECONDS).
     build[String,GameState]().
     asMap().
     asScala
