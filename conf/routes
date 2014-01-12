@@ -3,6 +3,7 @@
 # ~~~~
 
 GET     /                           controllers.MainController.index()
+GET     /threed                     controllers.ThreedController.index()
 
 GET     /life                       controllers.LifeController.getState()
 GET     /reset                      controllers.LifeController.reset()
