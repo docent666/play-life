@@ -7,33 +7,185 @@
     <link rel='stylesheet' href='@routes.Assets.at("stylesheets/index.css")'>
     <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
     <script type="text/javascript" src="@routes.LifeController.javascriptRoutes"></script>
-    <script src="https://rawgithub.com/mrdoob/three.js/master/build/three.js"></script>
-
+    <script type="text/javascript"  src='@routes.Assets.at("javascripts/three.js")'></script>
 </head>
 <body>
+<button class="button" id="autoRefreshButton">Auto Refresh</button>
+<button class="button" id="singleRefreshButton">Single Step</button>
+<button class="button" id="resetButton">Reset</button>
+    <script type="x-shader/x-vertex" id="vertexshader">
+
+    attribute float alpha;
+
+    varying float vAlpha;
+
+    void main() {
+
+        vAlpha = alpha;
+
+        vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+        gl_PointSize = 2.0;
+
+        gl_Position = projectionMatrix * mvPosition;
+
+    }
+
+</script>
+
+    <script type="x-shader/x-fragment" id="fragmentshader">
+
+    uniform vec3 color;
+
+    varying float vAlpha;
+
+    void main() {
+
+        gl_FragColor = vec4( color, vAlpha );
+
+    }
+
+</script>
+
     <script type='text/javascript' src='@routes.Assets.at("javascripts/index.js")'></script>
     <script type='text/javascript'>
-        var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
-        var renderer = new THREE.WebGLRenderer();
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        document.body.appendChild( renderer.domElement );
+var uniforms, attributes;
 
-        var geometry = new THREE.CubeGeometry(1,1,1);
-        var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-        var cube = new THREE.Mesh( geometry, material );
-        scene.add( cube );
 
-        camera.position.z = 5;
+function padString(binString, targetWidth) {
+    var len = targetWidth-binString.length;
+    if (len>0)
+        return Array(targetWidth-binString.length+1).join("0")+binString;
+    return binString;
+}
 
-        function render() {
-            requestAnimationFrame(render);
-            cube.rotation.x += 0.1;
-            cube.rotation.y += 0.1;
-            renderer.render(scene, camera);
+function draw(arrHex) {
+      var UNIT_WIDTH=53;
+      var height = arrHex.length;
+      var width = arrHex[0].length;
+
+      if (particles.vertices.length==0) {
+            for (var plane = 0; plane<planes.length; plane++) {
+                for (var x = 0; x < height; x++) {
+                      for (var y = 0; y < width*UNIT_WIDTH; y++) {
+                        var particle = new THREE.Vector3((x-height/2)*3, (y-width*UNIT_WIDTH/2)*3, (plane-10)*10);
+                        particles.vertices.push(particle);
+                     }
+                }
+            }
+          scene.add(particleSystem);
+      }
+
+for (var plane = 0; plane<planes.length; plane++) {
+      for (var i=0; i < height; i++) {
+            for (var j = 0; j<width;j++) {
+                var paddedString = padString(arrHex[i][j].toString(2), UNIT_WIDTH);
+                for (var b = 0; b<UNIT_WIDTH; b++) {
+                    //putPixel(data, 4 * ( i * w + b+UNIT_WIDTH*j), paddedString.charAt(b))
+                     if (paddedString[b]==0) {
+                        attributes.alpha.value[plane*height*width*UNIT_WIDTH+i*(width*UNIT_WIDTH) +b+j*UNIT_WIDTH] = 0.3;
+                     } else {
+                        attributes.alpha.value[plane*height*width*UNIT_WIDTH+i*(width*UNIT_WIDTH) +b+j*UNIT_WIDTH] = 0;
+                     }
+
+                }
+            }
+      }
+ }
+      attributes.alpha.needsUpdate = true;
+
+}
+
+
+
+      // revolutions per second
+      var angularSpeed = 0.1;
+      var lastTime = 0;
+
+      // this function is executed on each animation frame
+      function animate(){
+        // update
+        var time = (new Date()).getTime();
+        var timeDiff = time - lastTime;
+        var angleChange = angularSpeed * timeDiff * 2 * Math.PI / 1000;
+        for (i = 0; i<planes.length; i++) {
+         planes[i].rotation.z += angleChange;
         }
-        render();
+        particleSystem.rotation.z += angleChange;
+        lastTime = time;
+
+        // render
+        renderer.render(scene, camera);
+
+        // request new frame
+        requestAnimationFrame(function(){
+            animate();
+        });
+      }
+
+      // renderer
+      var renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      //
+      var particles = new THREE.Geometry()
+
+
+         // attributes
+    attributes = {
+
+        alpha: { type: 'f', value: [] },
+
+    };
+
+    // uniforms
+    uniforms = {
+
+        color: { type: "c", value: new THREE.Color( 0xffffff ) },
+
+    };
+
+
+      var shaderMaterial = new THREE.ShaderMaterial( {
+
+        uniforms:       uniforms,
+        attributes:     attributes,
+        vertexShader:   document.getElementById( 'vertexshader' ).textContent,
+        fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+        transparent:    true
+
+    });
+
+      // camera
+      var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 3000);
+      camera.position.y = -1150;
+      camera.position.z = 1400;
+      camera.rotation.x = 35 * (Math.PI / 180);
+
+      // scene
+      var scene = new THREE.Scene();
+
+      // plane
+      var planes = new Array();
+      for (i = 0; i < 20; i++) {
+        planes[i] = new THREE.Mesh(new THREE.PlaneGeometry(300*3, 424*3), new THREE.MeshNormalMaterial({color: 0x77cae6, transparent: true, opacity: 0.1}));
+        planes[i].position.z = (i-10)*10;
+        planes[i].overdraw = true;
+        scene.add(planes[i]);
+      }
+
+
+
+      // create the particle system
+        var particleSystem = new THREE.ParticleSystem(
+            particles,
+            shaderMaterial);
+
+
+      // start animation
+      animate();
     </script>
 </body>
 </html>
