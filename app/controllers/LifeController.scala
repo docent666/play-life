@@ -1,71 +1,74 @@
 package controllers
 
-import play.api.mvc.{Action, Controller}
+import play.api.mvc._
 import play.api.libs.json.Json
 import play.api.Routes
 import models.com.bulba.{RandomCanvas, GameState}
 import collection.JavaConverters._
 import com.google.common.cache.CacheBuilder
 import java.util.concurrent.TimeUnit
+import models.com.bulba.RandomCanvas
+import scala.Some
+import play.api.mvc.SimpleResult
 
 object LifeController extends Controller {
 
   val states = CacheBuilder.
     newBuilder().
     expireAfterAccess(1, TimeUnit.HOURS).
-    build[String,GameState]().
+    build[String, GameState]().
     asMap().
     asScala
 
+  def getState = Action {
+    implicit request =>
+      session.get("state") match {
 
-  def getState = {
-    Action {
-      implicit request =>
-        session.get("state") match {
-
-          case Some(sessionState) =>
-            val state = states.getOrElse(sessionState.asInstanceOf[String], new GameState(RandomCanvas(300, 424)))
-            if (!states.contains(sessionState.asInstanceOf[String]))
-              states += (sessionState -> state)
+        case Some(sessionState) =>
+          if (!states.contains(sessionState.asInstanceOf[String])) {
+            resetHelper(session.get("height").getOrElse(300).asInstanceOf[Int], session.get("width").getOrElse(424).asInstanceOf[Int])
+          } else {
+            val state = states.get(sessionState.asInstanceOf[String]).get
+            states += (sessionState -> state)
             state.advance()
             Ok(Json.toJson(state.toNumericSequence()))
               .withSession("state" -> sessionState)
+          }
 
-          case None =>
-            val state = new GameState(RandomCanvas(300, 424))
-            states += (state.hashCode().toString -> state)
-            Ok(Json.toJson(state.toNumericSequence()))
-              .withSession("state" -> state.hashCode().toString)
-        }
-    }
+        case None =>
+          throw new Exception("not initialized")
+      }
 
   }
 
-  def reset = {
-    Action {
+
+  def resetHelper(height: Int, width: Int)(implicit request: Request[AnyContent]): SimpleResult = {
+    session.get("state") match {
+
+      case Some(sessionState) =>
+        states += (sessionState -> new GameState(RandomCanvas(height, width)))
+        Ok(Json.toJson(states(sessionState).toNumericSequence()))
+          .withSession("state" -> sessionState, "height" -> height.toString, "width" -> width.toString)
+
+      case None =>
+        val state = new GameState(RandomCanvas(height, width))
+        states += (state.hashCode().toString -> state)
+        Ok(Json.toJson(state.toNumericSequence()))
+          .withSession("state" -> state.hashCode().toString)
+    }
+  }
+
+  def reset(height: Int, width: Int) = Action {
       implicit request =>
-        session.get("state") match {
+        resetHelper(height, width)
+ }
 
-          case Some(sessionState) =>
-            states += (sessionState -> new GameState(RandomCanvas(300, 424)))
-            Ok(Json.toJson(states(sessionState).toNumericSequence()))
-              .withSession("state" -> sessionState)
-
-          case None =>
-            val state = new GameState(RandomCanvas(300, 424))
-            states += (state.hashCode().toString -> state)
-            Ok(Json.toJson(state.toNumericSequence()))
-              .withSession("state" -> state.hashCode().toString)
-        }
-    }
-
-  }
 
   def javascriptRoutes = Action {
     implicit request =>
       Ok(Routes.javascriptRouter("jsRoutes")
         (routes.javascript.LifeController.getState,
-        routes.javascript.LifeController.reset)).as(JAVASCRIPT)
+            routes.javascript.LifeController.reset)).as(JAVASCRIPT)
   }
 
 }

@@ -11,12 +11,12 @@
     <script type="text/javascript" src='@routes.Assets.at("javascripts/draw.js")'></script>
 
 </head>
-<body>
+<body onload="resetButton.click()">
 
     <div class="">
         <button class="button" id="autoRefreshButton">Auto Refresh</button>
         <button class="button" id="singleRefreshButton">Single Step</button>
-        <button class="button" id="resetButton">Reset</button>
+        <button class="button" id="resetButton" data-width="400" data-height="424">Reset</button>
     </div>
     <div class="container">
         @content

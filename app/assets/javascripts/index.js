@@ -21,7 +21,9 @@ $(function() {
 
 $(function() {
     $("#resetButton").click(function(event) {
-        jsRoutes.controllers.LifeController.reset().ajax({
+        var width = $(this).data('width');
+        var height = $(this).data('height');
+        jsRoutes.controllers.LifeController.reset(width, height).ajax({
                success: function(data) {
                  draw(data)
                }

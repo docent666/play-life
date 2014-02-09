@@ -6,7 +6,7 @@ GET     /                           controllers.MainController.index()
 GET     /threed                     controllers.ThreedController.index()
 
 GET     /life                       controllers.LifeController.getState()
-GET     /reset                      controllers.LifeController.reset()
+POST    /reset/height/:height/width/:width     controllers.LifeController.reset(height: Int, width: Int)
 GET     /assets/javascripts/routes  controllers.LifeController.javascriptRoutes()
 
 # Map static resources from the /public folder to the /assets URL path
