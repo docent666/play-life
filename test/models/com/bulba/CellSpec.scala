@@ -6,33 +6,35 @@ import org.scalatest.matchers.ShouldMatchers
 
 class CellSpec extends FlatSpec with ShouldMatchers{
 
+  val strategy = Life2dStagingStrategy
+
   "Any live cell"  should "die if with fewer than two live neighbors" in {
     val withOneLiveNeighbor = neighborsWithLiveCells(1)
-    LiveCell.stage(withOneLiveNeighbor) should be (DeadCell)
+    LiveCell.stage(withOneLiveNeighbor, Life2dStagingStrategy) should be (DeadCell)
     val withNoLiveNeighbors = neighborsWithLiveCells(0)
-    LiveCell.stage(withNoLiveNeighbors) should be (DeadCell)
+    LiveCell.stage(withNoLiveNeighbors, Life2dStagingStrategy) should be (DeadCell)
   }
   it should "die if more than three live neighbors" in {
     val withFourLiveNeighbors = neighborsWithLiveCells(4)
-    LiveCell.stage(withFourLiveNeighbors) should be (DeadCell)
+    LiveCell.stage(withFourLiveNeighbors, Life2dStagingStrategy) should be (DeadCell)
   }
   it should "live if two or three neighbors" in {
     val withTwoLiveNeighbors = neighborsWithLiveCells(2)
-    LiveCell.stage(withTwoLiveNeighbors) should be (LiveCell)
+    LiveCell.stage(withTwoLiveNeighbors, Life2dStagingStrategy) should be (LiveCell)
     val withThreeLiveNeighbors = neighborsWithLiveCells(3)
-    LiveCell.stage(withThreeLiveNeighbors) should be (LiveCell)
+    LiveCell.stage(withThreeLiveNeighbors, Life2dStagingStrategy) should be (LiveCell)
   }
   "Any dead cell" should "come to life if three live neighbors" in {
     val withThreeLiveNeighbors = neighborsWithLiveCells(3)
-    DeadCell.stage(withThreeLiveNeighbors) should be (LiveCell)
+    DeadCell.stage(withThreeLiveNeighbors, Life2dStagingStrategy) should be (LiveCell)
   }
   it should "remain dead otherwise" in {
     val withTwoLiveNeighbors = neighborsWithLiveCells(2)
-    DeadCell.stage(withTwoLiveNeighbors) should be (DeadCell)
+    DeadCell.stage(withTwoLiveNeighbors, Life2dStagingStrategy) should be (DeadCell)
     val withOneLiveNeighbor = neighborsWithLiveCells(1)
-    DeadCell.stage(withOneLiveNeighbor) should be (DeadCell)
+    DeadCell.stage(withOneLiveNeighbor, Life2dStagingStrategy) should be (DeadCell)
     val withFourLiveNeighbors = neighborsWithLiveCells(4)
-    DeadCell.stage(withFourLiveNeighbors) should be (DeadCell)
+    DeadCell.stage(withFourLiveNeighbors, Life2dStagingStrategy) should be (DeadCell)
   }
 
 

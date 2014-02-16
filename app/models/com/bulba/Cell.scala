@@ -1,16 +1,13 @@
 package models.com.bulba
 
 sealed trait Cell {
-  def stage(neighbors : Seq[Cell]) : Cell
-  def toNumber() :Int
+  def stage(neighbors : Seq[Cell], strategy: StagingStrategy) : Cell
+  def toNumber :Int
 }
 
 case object LiveCell extends Cell {
-  def stage(neighbors: Seq[Cell]): Cell = {
-    neighbors.count(_.equals(this)) match {
-      case x if 2 to 3 contains x => this
-      case _ => DeadCell
-    }
+  def stage(neighbors: Seq[Cell], strategy: StagingStrategy): Cell = {
+    strategy.stage(this, neighbors)
   }
 
   override def toString : String =  "0"
@@ -19,11 +16,35 @@ case object LiveCell extends Cell {
 }
 
 case object DeadCell extends Cell {
-  def stage(neighbors: Seq[Cell]): Cell = {
-    if (neighbors.count(_.equals(LiveCell)) == 3) LiveCell else this
+  def stage(neighbors: Seq[Cell], strategy: StagingStrategy): Cell = {
+    strategy.stage(this, neighbors)
   }
 
   override def toString : String =  "1"
   override def toNumber : Int = 1
+}
+
+trait StagingStrategy {
+  def stage(cell: Cell, neighbors: Seq[Cell]) : Cell
+}
+
+object Life2dStagingStrategy  extends StagingStrategy{
+  def stage(cell: Cell, neighbors: Seq[Cell]) : Cell = {
+    (cell, neighbors.count(_.equals(LiveCell))) match {
+      case (DeadCell, x) if x==3 => LiveCell
+      case (DeadCell, _) => DeadCell
+      case (LiveCell, x) if 2 to 3 contains x => LiveCell
+      case (LiveCell, _) => DeadCell
+    }
+  }
+}
+
+object Life3dStagingStrategy extends StagingStrategy{
+  def stage(cell: Cell, neighbors: Seq[Cell]) : Cell = {
+    (cell, neighbors.count(_.equals(LiveCell))) match {
+      case (DeadCell, _) => DeadCell
+      case (LiveCell, _) => DeadCell
+    }
+  }
 }
 

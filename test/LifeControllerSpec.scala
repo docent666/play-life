@@ -11,8 +11,8 @@ class LifeControllerSpec extends Specification {
   
   "LifeController" should {
     
-    "getStage should return JSON" in new WithApplication {
-      val result = controllers.LifeController.getState(FakeRequest())
+    "getState should return JSON" in new WithApplication {
+      val result = controllers.LifeController.getState(FakeRequest().withSession("state" -> "dummy"))
 
       status(result) must equalTo(OK)
       contentType(result) must beSome("application/json")
