@@ -7,34 +7,13 @@ import ExecutionContext.Implicits.global
 
 trait Canvas[+S <: Seq[Cell], +T <: Seq[S]] {
 
+  val canvas: T
+
+  implicit val strategy : StagingStrategy
+
   def getCell(x: Int, y: Int): Cell
 
   def getNeighbors(x: Int, y: Int): S
-
-  def stage(): Canvas[S, T]
-
-  def toNumericSequence: Seq[Seq[Long]]
-
-}
-
-trait Finite2dCanvas[+S <: Seq[Cell], +T <: Seq[S]] extends Canvas[S, T] {
-
-  val canvas: T
-
-  def getCell(x: Int, y: Int): Cell = (x, y) match {
-    case (a, _) if a < 0 => DeadCell
-    case (_, b) if b < 0 => DeadCell
-    case (a, b) if a >= canvas.length || b >= canvas(a).length => DeadCell
-    case (_, _) => canvas(x)(y)
-  }
-
-  def getNeighbors(x: Int, y: Int): S = (for {i1 <- x - 1 to x + 1
-                                              y1 <- y - 1 to y + 1
-                                              if !(i1 == x && y1 == y)}
-                                                yield getCell(i1, y1)).asInstanceOf[S]
-
-
-  def stage(): Canvas[S, T]
 
   override def toString: String = {
     canvas map (_.mkString("")) mkString "\n"
@@ -50,6 +29,49 @@ trait Finite2dCanvas[+S <: Seq[Cell], +T <: Seq[S]] extends Canvas[S, T] {
     }
     canvas.par.map(rowToSeqLong(_)).seq
   }
+
+  def stage(): Canvas[S, T]
+
+}
+
+trait Finite3dCanvas[+S <: Seq[Cell], +T <: Seq[S]] extends Canvas[S, T] {
+  val canvasBelow: Canvas[S, T]
+  val canvasAbove: Canvas[S, T]
+
+  implicit val strategy  = Life3dStagingStrategy
+
+  def getCell(x: Int, y: Int): Cell = (x, y) match {
+    case (a, _) if a < 0 => DeadCell
+    case (_, b) if b < 0 => DeadCell
+    case (a, b) if a >= canvas.length || b >= canvas(a).length => DeadCell
+    case (_, _) => canvas(x)(y)
+  }
+
+  def getNeighbors(x: Int, y: Int): S = {
+    val neighbors = for {i1 <- x - 1 to x + 1; y1 <- y - 1 to y + 1; if !(i1 == x && y1 == y)} yield getCell(i1, y1)
+    val belowCells = for {i1 <- x - 1 to x + 1; y1 <- y - 1 to y + 1} yield canvasBelow.getCell(i1, y1)
+    val aboveCells = for {i1 <- x - 1 to x + 1; y1 <- y - 1 to y + 1} yield canvasAbove.getCell(i1, y1)
+    (neighbors ++ belowCells ++ aboveCells).asInstanceOf[S]
+  }
+
+
+}
+
+trait Finite2dCanvas[+S <: Seq[Cell], +T <: Seq[S]] extends Canvas[S, T] {
+
+  implicit val strategy  = Life2dStagingStrategy
+
+  def getCell(x: Int, y: Int): Cell = (x, y) match {
+    case (a, _) if a < 0 => DeadCell
+    case (_, b) if b < 0 => DeadCell
+    case (a, b) if a >= canvas.length || b >= canvas(a).length => DeadCell
+    case (_, _) => canvas(x)(y)
+  }
+
+  def getNeighbors(x: Int, y: Int): S = (for {i1 <- x - 1 to x + 1
+                                              y1 <- y - 1 to y + 1
+                                              if !(i1 == x && y1 == y)}
+  yield getCell(i1, y1)).asInstanceOf[S]
 
 }
 
@@ -70,7 +92,7 @@ case class ArrayCanvas[S <: Seq[Cell], T <: Seq[S]](override val canvas: T) exte
       val listOfFutures = for (i <- 0 until canvas.length) yield
         Future {
           for (j <- 0 until canvas(i).length)
-            newCanvas(i)(j) = getCell(i, j).stage(getNeighbors(i, j), Life2dStagingStrategy)
+            newCanvas(i)(j) = getCell(i, j).stage(getNeighbors(i, j), strategy)
         }
       Await.result(Future.sequence(listOfFutures), Duration(10, SECONDS))
       newCanvas

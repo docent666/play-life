@@ -1,7 +1,7 @@
 package models.com.bulba
 
 sealed trait Cell {
-  def stage(neighbors : Seq[Cell], strategy: StagingStrategy) : Cell
+  def stage(neighbors : Seq[Cell],strategy: StagingStrategy) : Cell
   def toNumber :Int
 }
 
