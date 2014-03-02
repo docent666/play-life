@@ -9,7 +9,7 @@ trait Canvas[+S <: Seq[Cell], +T <: Seq[S]] {
 
   val canvas: T
 
-  implicit val strategy : StagingStrategy
+  protected implicit val strategy: StagingStrategy
 
   def getCell(x: Int, y: Int): Cell
 
@@ -35,10 +35,11 @@ trait Canvas[+S <: Seq[Cell], +T <: Seq[S]] {
 }
 
 trait Finite3dCanvas[+S <: Seq[Cell], +T <: Seq[S]] extends Canvas[S, T] {
-  val canvasBelow: Canvas[S, T]
-  val canvasAbove: Canvas[S, T]
+  def canvasBelow: Canvas[S, T]
 
-  implicit val strategy  = Life3dStagingStrategy
+  def canvasAbove: Canvas[S, T]
+
+  protected implicit val strategy = Life3dStagingStrategy
 
   def getCell(x: Int, y: Int): Cell = (x, y) match {
     case (a, _) if a < 0 => DeadCell
@@ -59,7 +60,7 @@ trait Finite3dCanvas[+S <: Seq[Cell], +T <: Seq[S]] extends Canvas[S, T] {
 
 trait Finite2dCanvas[+S <: Seq[Cell], +T <: Seq[S]] extends Canvas[S, T] {
 
-  implicit val strategy  = Life2dStagingStrategy
+  protected implicit val strategy = Life2dStagingStrategy
 
   def getCell(x: Int, y: Int): Cell = (x, y) match {
     case (a, _) if a < 0 => DeadCell
@@ -75,9 +76,22 @@ trait Finite2dCanvas[+S <: Seq[Cell], +T <: Seq[S]] extends Canvas[S, T] {
 
 }
 
+class DeadCanvas[+S <: Seq[Cell], +T <: Seq[S]] extends Canvas[S, T] {
+
+  protected implicit val strategy = Life3dStagingStrategy
+
+  override def getCell(x: Int, y: Int): Cell = DeadCell
+
+  override def getNeighbors(x: Int, y: Int): S = Seq.empty[Cell].asInstanceOf[S]
+
+  override def stage(): Canvas[S, T] = this
+
+  override val canvas: T = Seq.empty[S].asInstanceOf[T]
+}
+
 case class RandomCanvas[S <: Seq[Cell], T <: Seq[S]](width: Int, height: Int) extends Finite2dCanvas[S, T] {
   def stage(): Canvas[S, T] = {
-    new ArrayCanvas[S, T](canvas.asInstanceOf[T])
+    new Array2dCanvas[S, T](canvas.asInstanceOf[T])
   }
 
   val canvas = (for (i <- 0 until width) yield
@@ -85,21 +99,53 @@ case class RandomCanvas[S <: Seq[Cell], T <: Seq[S]](width: Int, height: Int) ex
       if (Random.nextInt(10) > 8) LiveCell else DeadCell).asInstanceOf[T]
 }
 
-case class ArrayCanvas[S <: Seq[Cell], T <: Seq[S]](override val canvas: T) extends Finite2dCanvas[S, T] {
-  def stage(): ArrayCanvas[S, T] = {
-    val allStagedCells = {
-      val newCanvas = Array.ofDim[Cell](canvas.length, canvas(0).length)
-      val listOfFutures = for (i <- 0 until canvas.length) yield
-        Future {
-          for (j <- 0 until canvas(i).length)
-            newCanvas(i)(j) = getCell(i, j).stage(getNeighbors(i, j), strategy)
-        }
-      Await.result(Future.sequence(listOfFutures), Duration(10, SECONDS))
-      newCanvas
-    }
-    new ArrayCanvas[S, T](allStagedCells.map(_.toSeq).toSeq.asInstanceOf[T])
+class Random3dCanvas[S <: Seq[Cell], T <: Seq[S]](width: Int, height: Int, index: Int, layers: => Layers[S, T]) extends Array3dCanvas[S, T](Seq.empty[S].asInstanceOf[T], index, layers) {
+
+
+  override def stage(): Canvas[S, T] = {
+    new Array3dCanvas[S, T](canvas.asInstanceOf[T], index, layers)
   }
 
+  override val canvas = (for (i <- 0 until width) yield
+    for (y <- 0 until height) yield
+      if (Random.nextInt(10) > 8) LiveCell else DeadCell).asInstanceOf[T]
+}
+
+abstract class ArrayCanvas[S <: Seq[Cell], T <: Seq[S]] extends Canvas[S, T] {
+
+  protected def stagedCells: Array[Array[Cell]] = {
+    val newCanvas = Array.ofDim[Cell](canvas.length, canvas(0).length)
+    val listOfFutures = for (i <- 0 until canvas.length) yield
+      Future {
+        for (j <- 0 until canvas(i).length)
+          newCanvas(i)(j) = getCell(i, j).stage(getNeighbors(i, j), strategy)
+      }
+    Await.result(Future.sequence(listOfFutures), Duration(10, SECONDS))
+    newCanvas
+  }
+
+}
+
+class Array3dCanvas[S <: Seq[Cell], T <: Seq[S]](override val canvas: T, index: Int, layers: => Layers[S, T]) extends ArrayCanvas[S, T] with Finite3dCanvas[S, T] {
+
+
+  override def canvasBelow: Canvas[S, T] = {
+    layers.below(index)
+  }
+
+  override def canvasAbove: Canvas[S, T] = {
+    layers.above(index)
+  }
+
+  def stage(): Canvas[S, T] = {
+    new Array3dCanvas[S, T](stagedCells.map(_.toSeq).toSeq.asInstanceOf[T], index, layers)
+  }
+}
+
+case class Array2dCanvas[S <: Seq[Cell], T <: Seq[S]](override val canvas: T) extends ArrayCanvas[S, T] with Finite2dCanvas[S, T] {
+  def stage(): Array2dCanvas[S, T] = {
+    new Array2dCanvas[S, T](stagedCells.map(_.toSeq).toSeq.asInstanceOf[T])
+  }
 }
 
 case class StringCanvas(override val canvas: Seq[Seq[Cell]]) extends Finite2dCanvas[Seq[Cell], Seq[Seq[Cell]]] {

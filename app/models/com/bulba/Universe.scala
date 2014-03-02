@@ -1,15 +1,34 @@
 package models.com.bulba
 
-case class Universe[+S <: Seq[Cell], +T <: Seq[S]](layers: Seq[Canvas[S, T]])  {
+class Universe[+S <: Seq[Cell], +T <: Seq[S]](layers:  => Seq[Canvas[S, T]])  {
 
-  def stage(): Universe[S,T] = Universe(layers.map(_.stage()))
+  implicit val universe  = this
+
+  def stage(): Universe[S,T] = new Universe(layers.map(_.stage()))
 
   def toNumericSequence: Seq[Seq[Seq[Long]]] = layers.par.map(_.toNumericSequence).seq
+
+
+}
+
+object Universe {
+  def apply[S <: Seq[Cell], T <: Seq[S]](layersInt: Int, width: Int, height: Int) : Universe[S, T] = {
+    lazy val lay: Layers[S, T] = new Layers[S, T](for (i <- 0 until layersInt) yield new Random3dCanvas(width, height, i, lay))
+    new Universe(lay)
+  }
 }
 
 
-object RandomUniverse {
-  def apply(layers: Int, width: Int, height: Int) : Universe[Seq[Cell], Seq[Seq[Cell]]] = {
-    new Universe[Seq[Cell], Seq[Seq[Cell]]](for (i <- 0 until layers) yield RandomCanvas(width, height))
-  }
+class Layers[+S <: Seq[Cell], +T <: Seq[S]](layers: Seq[Canvas[S, T]]) extends Seq[Canvas[S, T]] {
+  val dead = new DeadCanvas
+
+  def below(index : Int) : Canvas[S, T] = if (index-1<layers.length && index-1>=0) layers(index-1) else dead
+
+  def above(index : Int) : Canvas[S, T] = if (index+1<layers.length && index+1>=0) layers(index+1) else dead
+
+  override def apply(idx: Int): Canvas[S, T] = layers(idx)
+
+  override def length: Int = layers.length
+
+  override def iterator: Iterator[Canvas[S, T]] = layers.iterator
 }

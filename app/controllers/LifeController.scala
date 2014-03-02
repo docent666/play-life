@@ -46,12 +46,12 @@ object LifeController extends Controller {
     session.get("state") match {
 
       case Some(sessionState) =>
-        states += (sessionState -> new GameState(RandomCanvas(height, width)))
+        states += (sessionState -> new GameState(new RandomCanvas(height, width)))
         Ok(Json.toJson(states(sessionState).toNumericSequence))
           .withSession("state" -> sessionState, "height" -> height.toString, "width" -> width.toString)
 
       case None =>
-        val state = new GameState(RandomCanvas(height, width))
+        val state = new GameState(new RandomCanvas(height, width))
         states += (state.hashCode().toString -> state)
         Ok(Json.toJson(state.toNumericSequence))
           .withSession("state" -> state.hashCode().toString)
