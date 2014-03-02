@@ -13,7 +13,7 @@
 <body onload="resetButton.click()">
 <button class="button" id="autoRefreshButton">Auto Refresh</button>
 <button class="button" id="singleRefreshButton">Single Step</button>
-<button class="button" id="resetButton" data-width="106" data-height="106">Reset</button>
+<button class="button" id="resetButton" data-layers="20" data-width="106" data-height="106">Reset</button>
 <script type="x-shader/x-vertex" id="vertexshader">
 
     attribute float alpha;
@@ -48,7 +48,7 @@
 
 </script>
 
-    <script type='text/javascript' src='@routes.Assets.at("javascripts/index.js")'></script>
+    <script type='text/javascript' src='@routes.Assets.at("javascripts/3dindex.js")'></script>
     <script type="text/javascript" src='@routes.Assets.at("javascripts/3ddraw.js")'></script>
 </body>
 </html>

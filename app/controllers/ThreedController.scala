@@ -52,7 +52,7 @@ object ThreedController extends Controller {
       case Some(sessionState) =>
         states += (sessionState -> new Game3DState(Universe(layers, width, height)))
         Ok(Json.toJson(states(sessionState).toNumericSequence))
-          .withSession("state" -> sessionState, "height" -> height.toString, "width" -> width.toString)
+          .withSession("state" -> sessionState, "layers" -> layers.toString, "height" -> height.toString, "width" -> width.toString)
 
       case None =>
         val state = new Game3DState(Universe(layers, width, height))
