@@ -10,7 +10,7 @@ function createParticles(particleSystem, particles, planes, height, width, scene
         for (var plane = 0; plane<planes.length; plane++) {
                 for (var x = 0; x < height; x++) {
                       for (var y = 0; y < width*UNIT_WIDTH; y++) {
-                        var particle = new THREE.Vector3((x-height/2)*3, (y-width*UNIT_WIDTH/2)*3, (plane-10)*10);
+                        var particle = new THREE.Vector3((x-height/2)*3, (y-width*UNIT_WIDTH/2)*3, planes[plane].position.z );
                         particles.vertices.push(particle);
                      }
                 }
@@ -20,18 +20,19 @@ function createParticles(particleSystem, particles, planes, height, width, scene
 
 function draw(arrHex) {
 
-      var height = arrHex.length;
-      var width = arrHex[0].length;
+      var layers = arrHex.length
+      var height = arrHex[0].length;
+      var width = arrHex[0][0].length;
 
       if (particles.vertices.length==0) {
          createParticles(particleSystem, particles, planes, height, width, scene)
       }
 
     var alphas = [];
-    for (var plane = 0; plane<planes.length; plane++) {
+    for (var plane = 0; plane<layers; plane++) {
           for (var i=0; i < height; i++) {
                 for (var j = 0; j<width;j++) {
-                    var paddedString = padString(arrHex[i][j].toString(2), UNIT_WIDTH);
+                    var paddedString = padString(arrHex[plane][i][j].toString(2), UNIT_WIDTH);
                     var rangeAlphas = Array.prototype.map.call(paddedString, function(x) { if (x==0) return 0.3; return 0; });
                     alphas.push.apply(alphas, rangeAlphas)
                 }
@@ -61,7 +62,7 @@ function animate(lastTime, particleSystem){
 
 
 var uniforms, attributes, particles;
-var angularSpeed = 0.05;
+var angularSpeed = 0.03;
 
 var PLANE_WIDTH=106
 var PLANE_HEIGHT=106
@@ -102,9 +103,9 @@ var UNIT_WIDTH=53;
     });
 
       // camera
-      var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 3000);
-      camera.position.y = -1050;
-      camera.position.z = 1200;
+      var camera = new THREE.PerspectiveCamera(16, window.innerWidth / window.innerHeight, 1, 3000);
+      camera.position.y = -950;
+      camera.position.z = 1250;
       camera.rotation.x = 35 * (Math.PI / 180);
 
 var scene = new THREE.Scene();
