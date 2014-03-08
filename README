@@ -1,7 +1,8 @@
-Game of Life in Scala - alpha version
+Game of Life in Scala - beta version
 
 Implementation of Game of Life http://en.wikipedia.org/wiki/Conway's_Game_of_Life using Scala, Play, simple Javascript and HTML5 Canvas.
 Web visualisation using Play/Activator: use ./activator run and http://localhost:9000
+Web 3d visualisation (early alpha) using Play/Activator: use ./activator run and http://localhost:9000/threed
 Game of Life in a console: use GameOfLife app and press any key to advance a stage.
 
 future plans:
