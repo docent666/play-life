@@ -52,7 +52,7 @@ trait Finite3dCanvas[+S <: Seq[Cell], +T <: Seq[S]] extends Canvas[S, T] {
     val neighbors = for {i1 <- x - 1 to x + 1; y1 <- y - 1 to y + 1; if !(i1 == x && y1 == y)} yield getCell(i1, y1)
     val belowCells = for {i1 <- x - 1 to x + 1; y1 <- y - 1 to y + 1} yield canvasBelow.getCell(i1, y1)
     val aboveCells = for {i1 <- x - 1 to x + 1; y1 <- y - 1 to y + 1} yield canvasAbove.getCell(i1, y1)
-    (neighbors ++ belowCells ++ aboveCells).asInstanceOf[S]
+    (aboveCells ++ neighbors ++ belowCells).asInstanceOf[S]
   }
 
 
