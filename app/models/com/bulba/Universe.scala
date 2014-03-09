@@ -1,8 +1,6 @@
 package models.com.bulba
 
-class Universe[S <: Seq[Cell], T <: Seq[S]](layers:  => Layers[S, T])  {
-
-  implicit val universe  = this
+class Universe[S <: Seq[Cell], T <: Seq[S]](layers: Layers[S, T])  {
 
   def stage(): Universe[S,T] = new Universe(layers.stageStatefully())
 
