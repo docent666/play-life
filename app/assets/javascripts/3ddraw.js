@@ -111,7 +111,7 @@ var UNIT_WIDTH=53;
 var scene = new THREE.Scene();
 var planes = new Array();
 for (i = 0; i < 20; i++) {
-    planes[i] = new THREE.Mesh(new THREE.PlaneGeometry(PLANE_HEIGHT*3, PLANE_WIDTH*3), new THREE.MeshNormalMaterial({color: 0x77cae6, transparent: true, opacity: 0.03}));
+    planes[i] = new THREE.Mesh(new THREE.PlaneGeometry(PLANE_HEIGHT*3, PLANE_WIDTH*3), new THREE.MeshNormalMaterial({color: 0x77cae6, transparent: true, opacity: 0.02}));
     planes[i].position.z = (i-10)*10;
     planes[i].overdraw = true;
     scene.add(planes[i]);

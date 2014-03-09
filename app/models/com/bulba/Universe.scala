@@ -1,10 +1,10 @@
 package models.com.bulba
 
-class Universe[+S <: Seq[Cell], +T <: Seq[S]](layers:  => Seq[Canvas[S, T]])  {
+class Universe[S <: Seq[Cell], T <: Seq[S]](layers:  => Layers[S, T])  {
 
   implicit val universe  = this
 
-  def stage(): Universe[S,T] = new Universe(new Layers(layers.map(_.stage())))
+  def stage(): Universe[S,T] = new Universe(layers.stageStatefully())
 
   def toNumericSequence: Seq[Seq[Seq[Long]]] = layers.par.map(_.toNumericSequence).seq
 
@@ -20,7 +20,7 @@ object Universe {
 }
 
 
-class Layers[+S <: Seq[Cell], +T <: Seq[S]](layers: Seq[Canvas[S, T]]) extends Seq[Canvas[S, T]] {
+class Layers[S <: Seq[Cell], T <: Seq[S]](var layers: Seq[Canvas[S, T]]) extends Seq[Canvas[S, T]] {
   val dead = new DeadCanvas
 
   def below(index : Int) : Canvas[S, T] = if (index-1<layers.length && index-1>=0) layers(index-1) else dead
@@ -34,4 +34,9 @@ class Layers[+S <: Seq[Cell], +T <: Seq[S]](layers: Seq[Canvas[S, T]]) extends S
   override def iterator: Iterator[Canvas[S, T]] = layers.iterator
 
   override def toString : String = layers map (_.toString) mkString "\n"
+
+  def stageStatefully() : Layers[S, T] = {
+    layers = layers.map(_.stage())
+    this
+  }
 }
