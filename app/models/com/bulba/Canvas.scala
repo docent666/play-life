@@ -108,7 +108,7 @@ class Random3dCanvas[S <: Seq[Cell], T <: Seq[S]](width: Int, height: Int, index
 
   override val canvas = (for (i <- 0 until width) yield
     for (y <- 0 until height) yield
-      if (Random.nextInt(10) > 8) LiveCell else DeadCell).asInstanceOf[T]
+      if (Random.nextInt(10) > 6) LiveCell else DeadCell).asInstanceOf[T]
 }
 
 abstract class ArrayCanvas[S <: Seq[Cell], T <: Seq[S]] extends Canvas[S, T] {

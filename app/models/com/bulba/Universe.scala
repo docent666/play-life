@@ -4,10 +4,11 @@ class Universe[+S <: Seq[Cell], +T <: Seq[S]](layers:  => Seq[Canvas[S, T]])  {
 
   implicit val universe  = this
 
-  def stage(): Universe[S,T] = new Universe(layers.map(_.stage()))
+  def stage(): Universe[S,T] = new Universe(new Layers(layers.map(_.stage())))
 
   def toNumericSequence: Seq[Seq[Seq[Long]]] = layers.par.map(_.toNumericSequence).seq
 
+  override def toString : String = layers.toString
 
 }
 
@@ -31,4 +32,6 @@ class Layers[+S <: Seq[Cell], +T <: Seq[S]](layers: Seq[Canvas[S, T]]) extends S
   override def length: Int = layers.length
 
   override def iterator: Iterator[Canvas[S, T]] = layers.iterator
+
+  override def toString : String = layers map (_.toString) mkString "\n"
 }
