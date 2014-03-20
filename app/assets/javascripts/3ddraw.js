@@ -33,7 +33,7 @@ function draw(arrHex) {
           for (var i=0; i < height; i++) {
                 for (var j = 0; j<width;j++) {
                     var paddedString = padString(arrHex[plane][i][j].toString(2), UNIT_WIDTH);
-                    var rangeAlphas = Array.prototype.map.call(paddedString, function(x) { if (x==0) return 0.3; return 0; });
+                    var rangeAlphas = Array.prototype.map.call(paddedString, function(x) { if (x==0) return 0.8; return 0; });
                     alphas.push.apply(alphas, rangeAlphas)
                 }
           }
@@ -87,7 +87,7 @@ var UNIT_WIDTH=53;
     // uniforms
     uniforms = {
 
-        color: { type: "c", value: new THREE.Color( 0xffffff ) }
+        color: { type: "c", value: new THREE.Color( 0x77cae6 ) }
 
     };
 
