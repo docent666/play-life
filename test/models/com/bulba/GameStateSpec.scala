@@ -2,6 +2,7 @@ package models.com.bulba
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
+import models.com.bulba.canvas.StringCanvas
 
 
 class GameStateSpec extends FlatSpec with ShouldMatchers {

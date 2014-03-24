@@ -1,5 +1,7 @@
 package models.com.bulba
 
+import models.com.bulba.canvas.{StringCanvas, RandomCanvas}
+
 object GameOfLife extends App {
 
   val demoCanvas = StringCanvas(

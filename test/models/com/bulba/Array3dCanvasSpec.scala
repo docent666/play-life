@@ -2,6 +2,7 @@ package models.com.bulba
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
+import models.com.bulba.canvas.Array3dCanvas
 
 
 class Array3dCanvasSpec extends FlatSpec with ShouldMatchers{

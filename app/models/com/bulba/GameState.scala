@@ -1,5 +1,7 @@
 package models.com.bulba
 
+import models.com.bulba.canvas.Canvas
+
 
 class GameState(var canvas: Canvas[Seq[Cell], Seq[Seq[Cell]]]) {
 

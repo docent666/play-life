@@ -3,13 +3,13 @@ package controllers
 import play.api.mvc._
 import play.api.libs.json.Json
 import play.api.Routes
-import models.com.bulba.{RandomCanvas, GameState}
+import models.com.bulba.GameState
 import collection.JavaConverters._
 import com.google.common.cache.CacheBuilder
 import java.util.concurrent.TimeUnit
-import models.com.bulba.RandomCanvas
 import scala.Some
 import play.api.mvc.SimpleResult
+import models.com.bulba.canvas.RandomCanvas
 
 object LifeController extends Controller {
 

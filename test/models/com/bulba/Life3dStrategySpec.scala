@@ -2,6 +2,7 @@ package models.com.bulba
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
+import models.com.bulba.stagingstrategy.Life3dStagingStrategy
 
 
 class Life3dStrategySpec extends FlatSpec with ShouldMatchers{
