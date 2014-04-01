@@ -14,4 +14,8 @@ class DeadCanvas[+S <: Seq[Cell], +T <: Seq[S]] extends Canvas[S, T] {
   override def stage(): Canvas[S, T] = this
 
   override val canvas: T = Seq.empty[S].asInstanceOf[T]
+
+  override def haveNeighborsChanged(x: Int, y: Int): Boolean = false
+
+  override val changedCells: Set[(Int, Int)] = Set.empty
 }

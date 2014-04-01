@@ -13,6 +13,10 @@ trait Canvas[+S <: Seq[Cell], +T <: Seq[S]] {
 
   def getNeighbors(x: Int, y: Int): S
 
+  val changedCells : Set[(Int, Int)]
+
+  def haveNeighborsChanged(x: Int,y: Int) : Boolean
+
   override def toString: String = {
     canvas map (_.mkString("")) mkString "\n"
   }

@@ -9,6 +9,10 @@ case class StringCanvas(override val canvas: Seq[Seq[Cell]]) extends Finite2dCan
     yield (for (y <- 0 until canvas(i).length) yield getCell(i, y).stage(getNeighbors(i, y), Life2dStagingStrategy)).toSeq
     new StringCanvas(allStagedCells.toSeq)
   }
+
+  override def haveNeighborsChanged(x: Int, y: Int): Boolean = true
+
+  override val changedCells: Set[(Int, Int)] = (for (x <- 0 until canvas.length;y <- 0 until canvas(x).length) yield (x,y)).toSet
 }
 
 object StringCanvas {

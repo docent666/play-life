@@ -34,7 +34,7 @@ class Array3dCanvasSpec extends FlatSpec with ShouldMatchers{
 
   val canvases = List(canvasBelow, canvas, canvasAbove)
 
-  lazy val lay: Layers[Seq[Cell], Seq[Seq[Cell]]]  = new Layers(for (i <- 0 until 3) yield new Array3dCanvas(canvases(i), i, lay))
+  lazy val lay: Layers[Seq[Cell], Seq[Seq[Cell]]]  = new Layers(for (i <- 0 until 3) yield new Array3dCanvas(canvases(i), i, lay, (for (x <- 0 until 3; y<-0 until 3) yield (x, y)).toSet))
 
   "3d canvas" should "return correct neighbors" in {
     lay(1).getNeighbors(1,1) should be (Seq(
