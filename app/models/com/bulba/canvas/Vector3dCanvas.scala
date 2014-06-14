@@ -2,7 +2,7 @@ package models.com.bulba.canvas
 
 import models.com.bulba._
 
-class Array3dCanvas[S <: Seq[Cell], T <: Seq[S]](override val canvas: T, index: Int, layers: => Layers[S, T], override val changedCells: Set[(Int, Int)]) extends ArrayCanvas[S, T] with Finite3dCanvas[S, T] {
+class Vector3dCanvas[S <: Seq[Cell], T <: Seq[S]](override val canvas: T, index: Int, layers: => Layers[S, T], override val changedCells: Set[(Int, Int)]) extends VectorCanvas[S, T] with Finite3dCanvas[S, T] {
 
 
   override def canvasBelow: Canvas[S, T] = {
@@ -14,9 +14,9 @@ class Array3dCanvas[S <: Seq[Cell], T <: Seq[S]](override val canvas: T, index: 
   }
 
   def stage(): Canvas[S, T] = {
-    val staged: Array[Array[Cell]] = stagedCells
+    val staged = stagedCells
     val changed = for (x <- 0 until staged.length; y <- 0 until staged(x).length; if canvas(x)(y) != staged(x)(y)) yield (x, y)
-    new Array3dCanvas[S, T](stagedCells.map(_.toSeq).toSeq.asInstanceOf[T], index, layers, changed.toSet)
+    new Vector3dCanvas[S, T](stagedCells.map(_.toSeq).toSeq.asInstanceOf[T], index, layers, changed.toSet)
   }
 
   override def haveNeighborsChanged(x: Int, y: Int): Boolean = {

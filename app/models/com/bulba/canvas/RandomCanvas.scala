@@ -5,7 +5,7 @@ import models.com.bulba._
 
 case class RandomCanvas[S <: Seq[Cell], T <: Seq[S]](width: Int, height: Int) extends Finite2dCanvas[S, T] {
   def stage(): Canvas[S, T] = {
-    new Array2dCanvas[S, T](canvas.asInstanceOf[T], changedCells)
+    new Vector2dCanvas[S, T](canvas.asInstanceOf[T], changedCells)
   }
 
   val canvas = (for (i <- 0 until width) yield

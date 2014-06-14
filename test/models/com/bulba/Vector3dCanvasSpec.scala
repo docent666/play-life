@@ -2,10 +2,10 @@ package models.com.bulba
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
-import models.com.bulba.canvas.Array3dCanvas
+import models.com.bulba.canvas.Vector3dCanvas
 
 
-class Array3dCanvasSpec extends FlatSpec with ShouldMatchers{
+class Vector3dCanvasSpec extends FlatSpec with ShouldMatchers{
 
 
   // D L L
@@ -34,7 +34,7 @@ class Array3dCanvasSpec extends FlatSpec with ShouldMatchers{
 
   val canvases = List(canvasBelow, canvas, canvasAbove)
 
-  lazy val lay: Layers[Seq[Cell], Seq[Seq[Cell]]]  = new Layers(for (i <- 0 until 3) yield new Array3dCanvas(canvases(i), i, lay, (for (x <- 0 until 3; y<-0 until 3) yield (x, y)).toSet))
+  lazy val lay: Layers[Seq[Cell], Seq[Seq[Cell]]]  = new Layers(for (i <- 0 until 3) yield new Vector3dCanvas(canvases(i), i, lay, (for (x <- 0 until 3; y<-0 until 3) yield (x, y)).toSet))
 
   "3d canvas" should "return correct neighbors" in {
     lay(1).getNeighbors(1,1) should be (Seq(
@@ -67,7 +67,7 @@ class Array3dCanvasSpec extends FlatSpec with ShouldMatchers{
   }
 
   "3d canvas" should "only stage cells for which neighbors changed in previous iteration" in {
-    lazy val lay: Layers[Seq[Cell], Seq[Seq[Cell]]]  = new Layers(for (i <- 0 until 3) yield new Array3dCanvas(canvases(i), i, lay, Set.empty))
+    lazy val lay: Layers[Seq[Cell], Seq[Seq[Cell]]]  = new Layers(for (i <- 0 until 3) yield new Vector3dCanvas(canvases(i), i, lay, Set.empty))
     val staged = lay(1).stage()
     staged.canvas should be(lay(1).canvas)
   }
