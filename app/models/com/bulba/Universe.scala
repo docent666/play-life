@@ -4,11 +4,13 @@ import models.com.bulba.canvas.Random3dCanvas
 
 class Universe[S <: Seq[Cell], T <: Seq[S]](layers: Layers[S, T])  {
 
-  def stage(): Universe[S,T] = new Universe(layers.stageStatefully())
+  def stage(): Universe[S,T] = {
+    new Universe(layers.stageStatefully())
+  }
 
   def toNumericSequence: Seq[Seq[Seq[Long]]] = layers.par.map(_.toNumericSequence).seq
 
-  override def toString : String = layers.toString
+  override def toString : String = layers.toString()
 
 }
 

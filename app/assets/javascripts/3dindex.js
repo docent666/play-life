@@ -35,7 +35,7 @@ $(function() {
 
 function refresh() {
     if (doRefresh == true)
-        setTimeout(refresh,50);
+        setTimeout(refresh,300);
     jsRoutes.controllers.ThreedController.getState().ajax({
                success: function(data) {
                  //  console.log(data)

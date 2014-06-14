@@ -7,8 +7,6 @@ import ExecutionContext.Implicits.global
 
 abstract class ArrayCanvas[S <: Seq[Cell], T <: Seq[S]] extends Canvas[S, T] {
 
-
-
   protected def stagedCells: Array[Array[Cell]] = {
     val newCanvas = Array.ofDim[Cell](canvas.length, canvas(0).length)
     val listOfFutures = for (i <- 0 until canvas.length) yield
