@@ -14,6 +14,8 @@ class Game3DState(var universe: Universe[Seq[Cell], Seq[Seq[Cell]]]) {
     universe.toNumericSequence
   }
 
+  def toHex: Seq[Seq[String]] = universe.toHex
+
  }
 
 

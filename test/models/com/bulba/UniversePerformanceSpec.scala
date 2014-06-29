@@ -18,9 +18,18 @@ class UniversePerformanceSpec extends FlatSpec with ShouldMatchers{
     val universes = for (i <- 0 until 10) yield new Game3DState(Universe(10,50,50))
     for (universe <- universes) universe.advance()
     val start = System.currentTimeMillis()
-    for (i <- 0 until 10; universe <-universes) universe.toNumericSequence
+    for (i <- 0 until 10; universe <- universes) universe.toNumericSequence
     val stop = System.currentTimeMillis()
     (stop - start) should be < 500L
+  }
+
+  "universe" should "convert to binary representation in 400ms" in {
+    val universes = for (i <- 0 until 10) yield new Game3DState(Universe(10,50,50))
+    for (universe <- universes) universe.advance()
+    val start = System.currentTimeMillis()
+    for (i <- 0 until 10; universe <- universes) universe.toHex
+    val stop = System.currentTimeMillis()
+    (stop - start) should be < 400L
   }
 
 }

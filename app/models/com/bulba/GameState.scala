@@ -17,6 +17,10 @@ class GameState(var canvas: Canvas[Seq[Cell], Seq[Seq[Cell]]]) {
     canvas.toNumericSequence
   }
 
+  def toHex : Seq[String] = {
+    canvas.toHex
+  }
+
  }
 
 

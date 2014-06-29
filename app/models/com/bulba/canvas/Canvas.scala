@@ -32,6 +32,19 @@ trait Canvas[+S <: Seq[Cell], +T <: Seq[S]] {
     canvas.par.map(rowToSeqLong(_)).seq
   }
 
+  def toHex: Seq[String] = {
+
+    def rowToHex(row : Seq[Cell]) : String = {
+      row.length match {
+        case x if x == 0 => ""
+        case x if x < 8 => Integer.parseInt(row.mkString, 2).asInstanceOf[Char].toString
+        case _ => Integer.parseInt(row.take(8).mkString, 2).asInstanceOf[Char] + rowToHex(row.drop(8))
+      }
+    }
+
+    Seq(canvas.length.toString,canvas(0).length.toString) ++ canvas.par.map(rowToHex(_)).seq
+  }
+
   def stage(): Canvas[S, T]
 
 }

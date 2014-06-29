@@ -33,7 +33,7 @@ function draw(arrHex) {
           for (var i=0; i < height; i++) {
                 for (var j = 0; j<width;j++) {
                     var paddedString = padString(arrHex[plane][i][j].toString(2), UNIT_WIDTH);
-                    var rangeAlphas = Array.prototype.map.call(paddedString, function(x) { if (x==0) return 0.8; return 0; });
+                    var rangeAlphas = Array.prototype.map.call(paddedString, function(x) { if (x==1) return 0.8; return 0; });
                     alphas.push.apply(alphas, rangeAlphas)
                 }
           }

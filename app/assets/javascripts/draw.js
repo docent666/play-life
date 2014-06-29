@@ -1,12 +1,12 @@
-function padString(binString, targetWidth) {
-    var len = targetWidth-binString.length;
+function padString(binString, targetLength) {
+    var len = targetLength-binString.length;
     if (len>0)
-        return Array(targetWidth-binString.length+1).join("0")+binString;
+        return Array(targetLength-binString.length+1).join("0")+binString;
     return binString;
 }
 
 function putPixel(data, coord, value){
-if (value == 0) {
+if (value == 1) {
     data[coord] =     0x77;
     data[coord + 1] = 0xCA;
     data[coord + 2] = 0xE6;
@@ -27,27 +27,26 @@ if (value == 0) {
 
 function draw(arrHex) {
  var canvas = document.getElementById("canvas");
- var UNIT_WIDTH=53;
- if (canvas.getContext) {
+if (canvas.getContext) {
       var ctx = canvas.getContext("2d");
-      var height = arrHex.length;
-      var width = arrHex[0].length;
+      var height = arrHex[0]
+      var width = arrHex[1]
 
       var h = ctx.canvas.height;
       var w = ctx.canvas.width;
 
       var imgData = ctx.getImageData(0, 0, w, h);
       var data = imgData.data;
-
       for (var i=0; i < height; i++) {
-            for (var j = 0; j<width;j++) {
-                var paddedString = padString(arrHex[i][j].toString(2), UNIT_WIDTH);
-                for (var b = 0; b<UNIT_WIDTH; b++) {
-                    putPixel(data, 4 * ( i * w + b+UNIT_WIDTH*j), paddedString.charAt(b))
-                }
+            var map = Array.prototype.map
+            var mappedString = map.call(arrHex[i+2], function(x) {return padString(x.charCodeAt(0).toString(2),8);})
+            for (var j=0; j < mappedString.length; j++) {
+                 for (var k=0; k<8; k++) {
+                   putPixel(data, 4*(i*w + k +j*8), mappedString[j][k])
+                 }
             }
       }
+
       ctx.putImageData(imgData, 0, 0);
   }
 }
-

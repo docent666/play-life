@@ -12,8 +12,8 @@ case object LiveCell extends Cell {
     strategy.stage(this, neighbors)
   }
 
-  override def toString : String =  "0"
-  override def toNumber : Int = 0
+  override def toString : String =  "1"
+  override def toNumber : Int = 1
 
 }
 
@@ -22,8 +22,8 @@ case object DeadCell extends Cell {
     strategy.stage(this, neighbors)
   }
 
-  override def toString : String =  "1"
-  override def toNumber : Int = 1
+  override def toString : String =  "0"
+  override def toNumber : Int = 0
 }
 
 
