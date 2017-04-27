@@ -6,9 +6,8 @@ object Life2dStagingStrategy  extends StagingStrategy{
   def stage(cell: Cell, neighbors: Seq[Cell]) : Cell = {
     (cell, neighbors.count(_.equals(LiveCell))) match {
       case (DeadCell, x) if x==3 => LiveCell
-      case (DeadCell, _) => DeadCell
       case (LiveCell, x) if 2 to 3 contains x => LiveCell
-      case (LiveCell, _) => DeadCell
+      case _ => DeadCell
     }
   }
 }

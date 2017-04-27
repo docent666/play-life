@@ -42,7 +42,7 @@ trait Canvas[+S <: Seq[Cell], +T <: Seq[S]] {
       }
     }
 
-    Seq(canvas.length.toString,canvas(0).length.toString) ++ canvas.par.map(rowToHex(_)).seq
+    Seq(canvas.length.toString,canvas.head.length.toString) ++ canvas.par.map(rowToHex(_)).seq
   }
 
   def stage(): Canvas[S, T]

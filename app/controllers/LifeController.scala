@@ -28,7 +28,7 @@ object LifeController extends Controller {
           if (!states.contains(sessionState.asInstanceOf[String])) {
             resetHelper(session.get("height").getOrElse(300).asInstanceOf[Int], session.get("width").getOrElse(424).asInstanceOf[Int])
           } else {
-            val state = states.get(sessionState.asInstanceOf[String]).get
+            val state = states(sessionState.asInstanceOf[String])
             states += (sessionState -> state)
             state.advance()
             Ok(Json.toJson(state.toHex))
@@ -46,12 +46,12 @@ object LifeController extends Controller {
     session.get("state") match {
 
       case Some(sessionState) =>
-        states += (sessionState -> new GameState(new RandomCanvas(height, width)))
+        states += (sessionState -> new GameState(RandomCanvas(height, width)))
         Ok(Json.toJson(states(sessionState).toHex))
           .withSession("state" -> sessionState, "height" -> height.toString, "width" -> width.toString)
 
       case None =>
-        val state = new GameState(new RandomCanvas(height, width))
+        val state = new GameState(RandomCanvas(height, width))
         states += (state.hashCode().toString -> state)
         Ok(Json.toJson(state.toHex))
           .withSession("state" -> state.hashCode().toString)

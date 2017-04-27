@@ -12,10 +12,12 @@ if (value == 1) {
     data[coord + 2] = 0xE6;
     data[coord + 3] = 255;
  } else {
-    if (data[coord] == 0x77 && data[coord +3] == 255) data[coord +3] = 180;
-    else if (data[coord] == 0x77 && data[coord +3] == 180) data[coord +3] = 140;
-    else if (data[coord] == 0x77 && data[coord +3] == 140) data[coord +3] = 100;
-    else if (data[coord] == 0x77 && data[coord +3] == 100) data[coord +3] = 50;
+    var coord0 = data[coord]
+    var coord3 = data[coord +3]
+    if (coord0 == 0x77 && coord3 == 255) data[coord +3] = 180;
+    else if (coord0 == 0x77 && coord3 == 180) data[coord +3] = 140;
+    else if (coord0 == 0x77 && coord3 == 140) data[coord +3] = 100;
+    else if (coord0 == 0x77 && coord3 == 100) data[coord +3] = 50;
     else {
         data[coord] =     0;
         data[coord + 1] = 0;

@@ -12,10 +12,9 @@ trait Finite3dCanvas[+S <: Seq[Cell], +T <: Seq[S]] extends Canvas[S, T] {
   protected implicit val strategy = Life3dStagingStrategy
 
   def getCell(x: Int, y: Int): Cell = (x, y) match {
-    case (a, _) if a < 0 => DeadCell
-    case (_, b) if b < 0 => DeadCell
+    case (a, b) if a < 0  || b <0 => DeadCell
     case (a, b) if a >= canvas.length || b >= canvas(a).length => DeadCell
-    case (_, _) => canvas(x)(y)
+    case _ => canvas(x)(y)
   }
 
   def getNeighbors(x: Int, y: Int): S = {
@@ -24,6 +23,5 @@ trait Finite3dCanvas[+S <: Seq[Cell], +T <: Seq[S]] extends Canvas[S, T] {
     val aboveCells = for {i1 <- x - 1 to x + 1; y1 <- y - 1 to y + 1} yield canvasAbove.getCell(i1, y1)
     (aboveCells ++ neighbors ++ belowCells).asInstanceOf[S]
   }
-
 
 }

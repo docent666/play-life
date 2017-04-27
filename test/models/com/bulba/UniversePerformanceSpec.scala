@@ -11,7 +11,9 @@ class UniversePerformanceSpec extends FlatSpec with ShouldMatchers{
     val start = System.currentTimeMillis()
     for (i <- 0 until 10; universe <-universes) universe.advance()
     val stop = System.currentTimeMillis()
-    (stop - start)/1000 should be < 10L
+    val elapsed = stop - start
+    println(s"took $elapsed")
+    elapsed/1000 should be < 10L
   }
 
   "universe" should "display in 500ms" in {
