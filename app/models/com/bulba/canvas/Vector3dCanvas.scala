@@ -16,7 +16,7 @@ class Vector3dCanvas[S <: Seq[Cell], T <: Seq[S]](override val canvas: T, index:
   def stage(): Canvas[S, T] = {
     val staged = stagedCells
     val changed = for (x <- staged.indices; y <- staged(x).indices; if canvas(x)(y) != staged(x)(y)) yield (x, y)
-    new Vector3dCanvas[S, T](stagedCells.map(_.toSeq).asInstanceOf[T], index, layers, changed.toSet)
+    new Vector3dCanvas[S, T](staged.map(_.toSeq).asInstanceOf[T], index, layers, changed.toSet)
   }
 
   override def haveNeighborsChanged(x: Int, y: Int): Boolean = {

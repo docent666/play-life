@@ -13,9 +13,9 @@ trait Canvas[+S <: Seq[Cell], +T <: Seq[S]] {
 
   def getNeighbors(x: Int, y: Int): S
 
-  val changedCells : Set[(Int, Int)]
+  val changedCells: Set[(Int, Int)]
 
-  def haveNeighborsChanged(x: Int,y: Int) : Boolean
+  def haveNeighborsChanged(x: Int, y: Int): Boolean
 
   override def toString: String = {
     canvas map (_.mkString("")) mkString "\n"
@@ -34,7 +34,7 @@ trait Canvas[+S <: Seq[Cell], +T <: Seq[S]] {
 
   def toHex: Seq[String] = {
 
-    def rowToHex(row : Seq[Cell]) : String = {
+    def rowToHex(row: Seq[Cell]): String = {
       row.length match {
         case x if x == 0 => ""
         case x if x < 8 => Integer.parseInt(row.mkString, 2).asInstanceOf[Char].toString
@@ -42,7 +42,7 @@ trait Canvas[+S <: Seq[Cell], +T <: Seq[S]] {
       }
     }
 
-    Seq(canvas.length.toString,canvas.head.length.toString) ++ canvas.par.map(rowToHex(_)).seq
+    Seq(canvas.length.toString, canvas.head.length.toString) ++ canvas.par.map(rowToHex(_)).seq
   }
 
   def stage(): Canvas[S, T]
