@@ -7,34 +7,33 @@ import models.com.bulba.canvas.Vector3dCanvas
 
 class Vector3dCanvasSpec extends FlatSpec with ShouldMatchers{
 
-
   // D L L
   // L D D
   // D L D
-  val canvasAbove = Seq(
-    Seq(DeadCell, LiveCell, LiveCell),
-    Seq(LiveCell, DeadCell, DeadCell),
-    Seq(DeadCell, LiveCell, DeadCell))
+  val canvasAbove = Vector(
+    Vector(DeadCell, LiveCell, LiveCell),
+    Vector(LiveCell, DeadCell, DeadCell),
+    Vector(DeadCell, LiveCell, DeadCell))
 
   // L L L
   // L D D
   // D D L
-  val canvasBelow = Seq(
-    Seq(LiveCell, LiveCell, LiveCell),
-    Seq(LiveCell, DeadCell, DeadCell),
-    Seq(DeadCell, DeadCell, LiveCell))
+  val canvasBelow = Vector(
+    Vector(LiveCell, LiveCell, LiveCell),
+    Vector(LiveCell, DeadCell, DeadCell),
+    Vector(DeadCell, DeadCell, LiveCell))
 
   // D D D
   // D D L
   // D D D
-  val canvas = Seq(
-    Seq(DeadCell, DeadCell, DeadCell),
-    Seq(DeadCell, DeadCell, LiveCell),
-    Seq(DeadCell, DeadCell, DeadCell))
+  val canvas = Vector(
+    Vector(DeadCell, DeadCell, DeadCell),
+    Vector(DeadCell, DeadCell, LiveCell),
+    Vector(DeadCell, DeadCell, DeadCell))
 
-  val canvases = List(canvasBelow, canvas, canvasAbove)
+  val canvases = Vector(canvasBelow, canvas, canvasAbove)
 
-  lazy val lay: Layers[Seq[Cell], Seq[Seq[Cell]]]  = new Layers(for (i <- 0 until 3) yield new Vector3dCanvas(canvases(i), i, lay, (for (x <- 0 until 3; y<-0 until 3) yield (x, y)).toSet))
+  lazy val lay: Layers[VC, VVC]  = new Layers(for (i <- 0 until 3) yield new Vector3dCanvas(canvases(i), i, lay, (for (x <- 0 until 3; y<-0 until 3) yield (x, y)).toSet))
 
   "3d canvas" should "return correct neighbors" in {
     lay(1).getNeighbors(1,1) should be (Seq(
@@ -67,7 +66,7 @@ class Vector3dCanvasSpec extends FlatSpec with ShouldMatchers{
   }
 
   "3d canvas" should "only stage cells for which neighbors changed in previous iteration" in {
-    lazy val lay: Layers[Seq[Cell], Seq[Seq[Cell]]]  = new Layers(for (i <- 0 until 3) yield new Vector3dCanvas(canvases(i), i, lay, Set.empty))
+    lazy val lay: Layers[VC, VVC]  = new Layers(for (i <- 0 until 3) yield new Vector3dCanvas(canvases(i), i, lay, Set.empty))
     val staged = lay(1).stage()
     staged.canvas should be(lay(1).canvas)
   }

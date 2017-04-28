@@ -1,13 +1,14 @@
 package models.com.bulba.canvas
 
-import scala.concurrent.{ExecutionContext, Await, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration._
-import models.com.bulba.Cell
+import models.com.bulba.{Cell, VC, VVC}
+
 import ExecutionContext.Implicits.global
 
-abstract class VectorCanvas[S <: Seq[Cell], T <: Seq[S]] extends Canvas[S, T] {
+abstract class VectorCanvas extends Canvas[VC, VVC] {
 
-  protected def stagedCells: Vector[Vector[Cell]] = {
+  protected def stagedCells: VVC = {
     val listOfFutures = for (i <- canvas.indices) yield
       Future {
         val row = canvas(i).indices.foldLeft(Vector.empty[Cell]){(acc, j) =>

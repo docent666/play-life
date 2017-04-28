@@ -1,18 +1,12 @@
 package models.com.bulba
 
-class Game3DState(var universe: Universe[Seq[Cell], Seq[Seq[Cell]]]) {
+class Game3DState[S <: Seq[Cell], T <: Seq[S]](var universe: Universe[S, T]) {
 
-  def advance() = {
-    universe = universe.stage()
-  }
+  def advance() = universe = universe.stage()
 
-  override def toString : String = {
-    universe.toString
-  }
+  override def toString : String = universe.toString
 
-  def toNumericSequence : Seq[Seq[Seq[Long]]] = {
-    universe.toNumericSequence
-  }
+  def toNumericSequence : Seq[Seq[Seq[Long]]] = universe.toNumericSequence
 
   def toHex: Seq[Seq[String]] = universe.toHex
 

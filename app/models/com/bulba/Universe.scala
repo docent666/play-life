@@ -17,8 +17,8 @@ class Universe[S <: Seq[Cell], T <: Seq[S]](layers: Layers[S, T])  {
 }
 
 object Universe {
-  def apply[S <: Seq[Cell], T <: Seq[S]](layersInt: Int, width: Int, height: Int) : Universe[S, T] = {
-    lazy val lay: Layers[S, T] = new Layers[S, T](for (i <- 0 until layersInt) yield new Random3dCanvas(width, height, i, lay))
+  def apply(layersInt: Int, width: Int, height: Int) : Universe[VC, VVC] = {
+    lazy val lay : Layers[VC, VVC] = new Layers[VC, VVC](for (i <- 0 until layersInt) yield new Random3dCanvas(width, height, i, lay))
     new Universe(lay)
   }
 }

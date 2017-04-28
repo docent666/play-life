@@ -18,7 +18,7 @@ object ThreedController extends Controller {
   val states = CacheBuilder.
     newBuilder().
     expireAfterAccess(1, TimeUnit.HOURS).
-    build[String, Game3DState]().asMap().asScala
+    build[String, Game3DState[VC, VVC]]().asMap().asScala
 
   def index = Action {
     Ok(views.html.threed.render())
@@ -32,7 +32,7 @@ object ThreedController extends Controller {
           if (!states.contains(sessionState.asInstanceOf[String])) {
             resetHelper(session.get("layers").getOrElse(20).asInstanceOf[Int], session.get("height").getOrElse(300).asInstanceOf[Int], session.get("width").getOrElse(424).asInstanceOf[Int])
           } else {
-            val state = states.get(sessionState.asInstanceOf[String]).get
+            val state = states(sessionState.asInstanceOf[String])
             states += (sessionState -> state)
             state.advance()
             Ok(Json.toJson(state.toNumericSequence))
@@ -50,12 +50,12 @@ object ThreedController extends Controller {
     session.get("state") match {
 
       case Some(sessionState) =>
-        states += (sessionState -> new Game3DState(Universe(layers, width, height)))
+        states += (sessionState -> new Game3DState[VC, VVC](Universe(layers, width, height)))
         Ok(Json.toJson(states(sessionState).toNumericSequence))
           .withSession("state" -> sessionState, "layers" -> layers.toString, "height" -> height.toString, "width" -> width.toString)
 
       case None =>
-        val state = new Game3DState(Universe(layers, width, height))
+        val state = new Game3DState[VC, VVC](Universe(layers, width, height))
         states += (state.hashCode().toString -> state)
         Ok(Json.toJson(state.toNumericSequence))
           .withSession("state" -> state.hashCode().toString)
